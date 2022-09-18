@@ -39,10 +39,10 @@ namespace Persistence.Extensions
 
             if (memberType == typeof(Int32))
                 constant = Expression.Constant(Int32.Parse(propertyValue));
-            else if (memberType == typeof(Double))
-                constant = Expression.Constant(Double.Parse(propertyValue));
+            else if (memberType == typeof(DateTime))
+                constant = Expression.Constant(DateTime.Parse(propertyValue));
             else if (memberType == typeof(Boolean))
-                constant = Expression.Constant(propertyValue == "true");
+                constant = Expression.Constant(propertyValue.Equals("true", StringComparison.CurrentCultureIgnoreCase));
 
             Expression expression;
             if (Enum.TryParse(methodName, true, out ExpressionType expressionType))

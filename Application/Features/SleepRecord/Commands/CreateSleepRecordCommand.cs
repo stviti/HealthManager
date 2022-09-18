@@ -34,12 +34,12 @@ namespace Application.Features.SleepRecord.Commands
             var validationResult = await validator.ValidateAsync(request.CreateDto, cancellationToken);
 
             if (validationResult.IsValid == false)
-                throw new ValidationException(validationResult.ToDictionary());
+                throw new ValidationException(validationResult.ToString());
 
             var newItem = _mapper.Map<SleepRecordEntity>(request.CreateDto);
 
-            await _repository.Add(newItem);
-            await _repository.Save();
+            await _repository.AddAsync(newItem, cancellationToken);
+            await _repository.SaveAsync(cancellationToken);
 
             var response = new BaseCommandResponse
             {

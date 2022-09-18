@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Contracts.Persistence;
 using Application.Models;
@@ -44,35 +45,36 @@ namespace ApplicationUnitTests.Mocks
 
             var mockRepo = new Mock<ITreatmentsRepository>();
 
-            mockRepo.Setup(r => r.GetAll()).ReturnsAsync(entities);
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync((CancellationToken cancellationToken) =>
+            {
+                return entities;
+            });
 
-            mockRepo.Setup(r => r.GetAll(It.IsAny<PaginatedFilter>())).ReturnsAsync((PaginatedFilter paginatedFilter) =>
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<PaginatedFilter>(), It.IsAny<CancellationToken>())).ReturnsAsync((PaginatedFilter paginatedFilter, CancellationToken cancellationToken) =>
             {
                 return new PaginationResponse<TreatmentEntity> { Data = entities };
             });
 
-            mockRepo.Setup(r => r.Get(It.IsAny<Guid>())).ReturnsAsync((Guid id) =>
+            mockRepo.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Guid id, CancellationToken cancellationToken) =>
             {
                 return entities.FirstOrDefault(i => i.Id == id);
             });
 
-            mockRepo.Setup(r => r.Add(It.IsAny<TreatmentEntity>())).ReturnsAsync((TreatmentEntity entity) =>
+            mockRepo.Setup(r => r.AddAsync(It.IsAny<TreatmentEntity>(), It.IsAny<CancellationToken>())).ReturnsAsync((TreatmentEntity entity, CancellationToken cancellationToken) =>
             {
                 entities.Add(entity);
                 return entity;
             });
 
-            mockRepo.Setup(r => r.Delete(It.IsAny<TreatmentEntity>())).Returns((TreatmentEntity entity) =>
+            mockRepo.Setup(r => r.Delete(It.IsAny<TreatmentEntity>())).Callback((TreatmentEntity entity) =>
             {
                 entities.Remove(entity);
-                return Task.CompletedTask;
             });
 
-            mockRepo.Setup(r => r.Update(It.IsAny<TreatmentEntity>())).Returns((TreatmentEntity entity) =>
+            mockRepo.Setup(r => r.Update(It.IsAny<TreatmentEntity>())).Callback((TreatmentEntity entity) =>
             {
                 var item = entities.FirstOrDefault(i => i.Id == entity.Id);
                 item = entity;
-                return Task.CompletedTask;
             });
 
             return mockRepo;

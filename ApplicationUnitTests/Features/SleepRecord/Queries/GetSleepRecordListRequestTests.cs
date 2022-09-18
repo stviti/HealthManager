@@ -42,7 +42,7 @@ namespace ApplicationUnitTests.Features.SleepRecord.Queries
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            var entities = await _mockRepository.Object.GetAll();
+            var entities = await _mockRepository.Object.GetAllAsync(CancellationToken.None);
 
             result.ShouldBeOfType<PaginationResponse<SleepRecordDto>>();
 

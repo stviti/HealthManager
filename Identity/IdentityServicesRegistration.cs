@@ -27,7 +27,13 @@ namespace Identity
             services.AddIdentity<AppUser, AppRole>(
                 options =>
                 {
-                    configuration.GetSection("IdentityOptions").Bind(options);
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireNonAlphanumeric = true;
+
+                    options.User.RequireUniqueEmail = true;
+
                 })
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();

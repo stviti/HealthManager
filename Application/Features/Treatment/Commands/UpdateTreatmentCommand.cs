@@ -32,16 +32,16 @@ namespace Application.Features.Treatment.Commands
             var validationResult = await validator.ValidateAsync(request.UpdateDto, cancellationToken);
 
             if (validationResult.IsValid == false)
-                throw new ValidationException(validationResult.ToDictionary());
+                throw new ValidationException(validationResult.ToString());
 
-            var existingEntity = await _repository.Get(request.UpdateDto.Id);
+            var existingEntity = await _repository.GetAsync(request.UpdateDto.Id, cancellationToken);
             if (existingEntity is null)
                 throw new NotFoundException(nameof(existingEntity), request.UpdateDto.Id);
 
             _mapper.Map(request.UpdateDto, existingEntity);
 
-            await _repository.Update(existingEntity);
-            await _repository.Save();
+            _repository.Update(existingEntity);
+            await _repository.SaveAsync(cancellationToken);
 
             var response = new BaseCommandResponse
             {

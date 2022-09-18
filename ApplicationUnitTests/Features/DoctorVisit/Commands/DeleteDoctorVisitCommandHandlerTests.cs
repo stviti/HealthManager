@@ -31,7 +31,7 @@ namespace ApplicationUnitTests.Features.DoctorVisit.Commands
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            var entities = await _mockRepository.Object.GetAll();
+            var entities = await _mockRepository.Object.GetAllAsync(CancellationToken.None);
 
             result.ShouldBeOfType<BaseCommandResponse>();
 

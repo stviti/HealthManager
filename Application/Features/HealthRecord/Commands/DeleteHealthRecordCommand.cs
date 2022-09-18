@@ -27,14 +27,13 @@ namespace Application.Features.HealthRecord.Commands
             if (request.Id == Guid.Empty)
                 throw new BadRequestException("Id cannot be empty.");
 
-            var existingEntity = await _repository.Get(request.Id);
-
+            var existingEntity = await _repository.GetAsync(request.Id, cancellationToken);
             if (existingEntity == null)
                 throw new NotFoundException(nameof(existingEntity), request.Id);
 
-            await _repository.Delete(existingEntity);
+            _repository.Delete(existingEntity);
 
-            await _repository.Save();
+            await _repository.SaveAsync(cancellationToken);
 
             var response = new BaseCommandResponse
             {

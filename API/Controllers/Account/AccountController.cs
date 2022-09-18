@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Application.Contracts.Identity;
 using Application.DTOs.Account;
 using Application.Models.Responses;
@@ -24,7 +25,7 @@ namespace API.Controllers.Account
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TokenResponse>> Login(LoginDto model)
+        public async Task<ActionResult<TokenResponse>> Login(LoginDto model, CancellationToken cancellationToken)
         {
             var response = await _userService.Login(model);
             return Ok(response);
@@ -34,7 +35,7 @@ namespace API.Controllers.Account
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TokenResponse>> Register(RegisterDto model)
+        public async Task<ActionResult<TokenResponse>> Register(RegisterDto model, CancellationToken cancellationToken)
         {
             var response = await _userService.Register(model);
             return Ok(response);

@@ -28,7 +28,7 @@ namespace Application.Features.HealthRecord.Queries
 
         public async Task<PaginationResponse<HealthRecordDto>> Handle(GetHealthRecordListRequest request, CancellationToken cancellationToken)
         {
-            var result = await _repository.GetAll(request.PaginatedFilter);
+            var result = await _repository.GetAllAsync(request.PaginatedFilter, cancellationToken);
 
             var dtos = _mapper.Map<List<HealthRecordDto>>(result.Data);
 

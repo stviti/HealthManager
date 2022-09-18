@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Contracts.Persistence;
 using Application.Models;
@@ -41,35 +42,35 @@ namespace ApplicationUnitTests.Mocks
 
             var mockRepo = new Mock<IDoctorVisitsRepository>();
 
-            mockRepo.Setup(r => r.GetAll()).ReturnsAsync(entities);
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync((CancellationToken cancellationToken) => { 
+                return entities;
+                });
 
-            mockRepo.Setup(r => r.GetAll(It.IsAny<PaginatedFilter>())).ReturnsAsync((PaginatedFilter paginatedFilter) =>
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<PaginatedFilter>(), It.IsAny<CancellationToken>())).ReturnsAsync((PaginatedFilter paginatedFilter, CancellationToken cancellationToken) =>
             {
                 return new PaginationResponse<DoctorVisitEntity> { Data = entities };
             });
 
-            mockRepo.Setup(r => r.Get(It.IsAny<Guid>())).ReturnsAsync((Guid id) =>
+            mockRepo.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Guid id, CancellationToken cancellationToken) =>
             {
                 return entities.FirstOrDefault(i => i.Id == id);
             });
 
-            mockRepo.Setup(r => r.Add(It.IsAny<DoctorVisitEntity>())).ReturnsAsync((DoctorVisitEntity entity) =>
+            mockRepo.Setup(r => r.AddAsync(It.IsAny<DoctorVisitEntity>(), It.IsAny<CancellationToken>())).ReturnsAsync((DoctorVisitEntity entity, CancellationToken cancellationToken) =>
             {
                 entities.Add(entity);
                 return entity;
             });
 
-            mockRepo.Setup(r => r.Delete(It.IsAny<DoctorVisitEntity>())).Returns((DoctorVisitEntity entity) =>
+            mockRepo.Setup(r => r.Delete(It.IsAny<DoctorVisitEntity>())).Callback((DoctorVisitEntity entity) =>
             {
                 entities.Remove(entity);
-                return Task.CompletedTask;
             });
 
-            mockRepo.Setup(r => r.Update(It.IsAny<DoctorVisitEntity>())).Returns((DoctorVisitEntity entity) =>
+            mockRepo.Setup(r => r.Update(It.IsAny<DoctorVisitEntity>())).Callback((DoctorVisitEntity entity) =>
             {
                 var item = entities.FirstOrDefault(i => i.Id == entity.Id);
                 item = entity;
-                return Task.CompletedTask;
             });
 
             return mockRepo;

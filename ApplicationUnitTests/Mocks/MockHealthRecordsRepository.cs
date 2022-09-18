@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Contracts.Persistence;
 using Application.Models;
@@ -41,35 +42,35 @@ namespace ApplicationUnitTests.Mocks
 
             var mockRepo = new Mock<IHealthRecordsRepository>();
 
-            mockRepo.Setup(r => r.GetAll()).ReturnsAsync(entities);
+            mockRepo.Setup(r => r.GetAllAsync(CancellationToken.None)).ReturnsAsync((CancellationToken cancellationToken)=> {
+                return entities;
+                });
 
-            mockRepo.Setup(r => r.GetAll(It.IsAny<PaginatedFilter>())).ReturnsAsync((PaginatedFilter paginatedFilter) =>
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<PaginatedFilter>(), It.IsAny<CancellationToken>())).ReturnsAsync((PaginatedFilter paginatedFilter, CancellationToken cancellationToken) =>
             {
                 return new PaginationResponse<HealthRecordEntity> { Data = entities };
             });
 
-            mockRepo.Setup(r => r.Get(It.IsAny<Guid>())).ReturnsAsync((Guid id) =>
+            mockRepo.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Guid id, CancellationToken cancellationToken) =>
             {
                 return entities.FirstOrDefault(i => i.Id == id);
             });
 
-            mockRepo.Setup(r => r.Add(It.IsAny<HealthRecordEntity>())).ReturnsAsync((HealthRecordEntity entity) =>
+            mockRepo.Setup(r => r.AddAsync(It.IsAny<HealthRecordEntity>(), It.IsAny<CancellationToken>())).ReturnsAsync((HealthRecordEntity entity, CancellationToken cancellationToken) =>
             {
                 entities.Add(entity);
                 return entity;
             });
 
-            mockRepo.Setup(r => r.Delete(It.IsAny<HealthRecordEntity>())).Returns((HealthRecordEntity entity) =>
+            mockRepo.Setup(r => r.Delete(It.IsAny<HealthRecordEntity>())).Callback((HealthRecordEntity entity) =>
             {
                 entities.Remove(entity);
-                return Task.CompletedTask;
             });
 
-            mockRepo.Setup(r => r.Update(It.IsAny<HealthRecordEntity>())).Returns((HealthRecordEntity entity) =>
+            mockRepo.Setup(r => r.Update(It.IsAny<HealthRecordEntity>())).Callback((HealthRecordEntity entity) =>
             {
                 var item = entities.FirstOrDefault(i => i.Id == entity.Id);
                 item = entity;
-                return Task.CompletedTask;
             });
 
             return mockRepo;

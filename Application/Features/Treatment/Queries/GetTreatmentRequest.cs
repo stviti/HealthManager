@@ -31,7 +31,7 @@ namespace Application.Features.Treatment.Queries
             if (request.Id == Guid.Empty)
                 throw new BadRequestException("Id cannot be empty.");
 
-            var entity = await _repository.Get(request.Id);
+            var entity = await _repository.GetAsync(request.Id, cancellationToken);
             if (entity is null)
                 throw new NotFoundException(nameof(entity), request.Id);
 

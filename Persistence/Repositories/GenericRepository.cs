@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Contracts.Persistence;
 using Application.Models;
@@ -21,22 +22,21 @@ namespace Persistence.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<T> Get(Guid id)
+        public virtual async Task<T> GetAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _dbContext.Set<T>()
-                .FindAsync(id);
+                .FindAsync(new object[] { id }, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<T>> GetAll()
+        public virtual async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _dbContext.Set<T>()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginationResponse<T>> GetAll(PaginatedFilter paginatedFilter)
+        public virtual async Task<PaginationResponse<T>> GetAllAsync(PaginatedFilter paginatedFilter, CancellationToken cancellationToken)
         {
-            IQueryable<T> query = _dbContext.Set<T>()
-                .ApplySearchFilter(paginatedFilter.SearchFilter);
+            IQueryable<T> query = _dbContext.Set<T>().ApplySearchFilter(paginatedFilter.SearchFilter);
 
             var totalCount = query.Count();
 
@@ -57,7 +57,7 @@ namespace Persistence.Repositories
                 .Skip(currentPage * pageSize)
                 .Take(pageSize);
 
-            var entities = await query.ToListAsync();
+            var entities = await query.ToListAsync(cancellationToken);
 
             var result = new PaginationResponse<T>
             {
@@ -71,36 +71,34 @@ namespace Persistence.Repositories
             return result;
         }
 
-        public async Task<bool> Exists(Guid id)
+        public virtual async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
         {
-            var entity = await Get(id);
+            var entity = await GetAsync(id, cancellationToken);
             return entity != null;
         }
 
-        public async Task<T> Add(T entity)
+        public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken)
         {
-            await _dbContext.Set<T>().AddAsync(entity);
+            await _dbContext.Set<T>().AddAsync(entity, cancellationToken);
             return entity;
         }
 
-        public virtual Task Update(T entity)
+        public virtual void Update(T entity)
         {
             _dbContext.Update(entity);
-            return Task.CompletedTask;
         }
 
-        public Task Delete(T entity)
+        public virtual void Delete(T entity)
         {
             _dbContext.Set<T>().Remove(entity);
-            return Task.CompletedTask;
         }
 
-        public async Task Save()
+        public virtual async Task SaveAsync(CancellationToken cancellationToken)
         {
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _dbContext.Dispose();
             GC.SuppressFinalize(this);

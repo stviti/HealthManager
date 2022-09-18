@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Contracts;
 using Domain.Entities;
@@ -23,7 +24,7 @@ namespace Persistence.Contexts
                 .HasQueryFilter(a => a.CreatedBy == _currentUser.UserId);
         }
 
-        public virtual async Task<int> SaveChangesAsync()
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             foreach (var entry in base.ChangeTracker.Entries<BasePrivateEntity>()
                 .Where(q => q.State == EntityState.Added || q.State == EntityState.Modified))

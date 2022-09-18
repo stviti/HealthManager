@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.DTOs.SleepRecord;
 using Application.Features.SleepRecord.Commands;
@@ -28,10 +29,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PaginationResponse<SleepRecordDto>>> Get([FromBody] PaginatedFilter paginatedFilter = default)
+        public async Task<ActionResult<PaginationResponse<SleepRecordDto>>> Get([FromBody] PaginatedFilter paginatedFilter, CancellationToken cancellationToken)
         {
             var command = new GetSleepRecordListRequest { PaginatedFilter = paginatedFilter };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -40,10 +41,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SleepRecordDto>> Get([FromRoute] Guid id)
+        public async Task<ActionResult<SleepRecordDto>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new GetSleepRecordRequest { Id = id };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -51,10 +52,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateSleepRecordDto model)
+        public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateSleepRecordDto model, CancellationToken cancellationToken)
         {
             var command = new CreateSleepRecordCommand { CreateDto = model };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -63,10 +64,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Update([FromBody] UpdateSleepRecordDto model)
+        public async Task<ActionResult<BaseCommandResponse>> Update([FromBody] UpdateSleepRecordDto model, CancellationToken cancellationToken)
         {
             var command = new UpdateSleepRecordCommand { UpdateDto = model };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -75,10 +76,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<BaseCommandResponse>> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new DeleteSleepRecordCommand { Id = id };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
     }

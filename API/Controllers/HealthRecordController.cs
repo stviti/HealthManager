@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.DTOs.HealthRecord;
 using Application.Features.HealthRecord.Commands;
@@ -28,10 +29,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PaginationResponse<HealthRecordDto>>> Get([FromBody] PaginatedFilter paginatedFilter = default)
+        public async Task<ActionResult<PaginationResponse<HealthRecordDto>>> Get([FromBody] PaginatedFilter paginatedFilter, CancellationToken cancellationToken)
         {
             var command = new GetHealthRecordListRequest { PaginatedFilter = paginatedFilter };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -40,10 +41,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<HealthRecordDto>> Get([FromRoute] Guid id)
+        public async Task<ActionResult<HealthRecordDto>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new GetHealthRecordRequest { Id = id };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -51,10 +52,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateHealthRecordDto model)
+        public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateHealthRecordDto model, CancellationToken cancellationToken)
         {
             var command = new CreateHealthRecordCommand { CreateDto = model };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -63,10 +64,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Update([FromBody] UpdateHealthRecordDto model)
+        public async Task<ActionResult<BaseCommandResponse>> Update([FromBody] UpdateHealthRecordDto model, CancellationToken cancellationToken)
         {
             var command = new UpdateHealthRecordCommand { UpdateDto = model };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -75,10 +76,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BaseCommandResponse>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<BaseCommandResponse>> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new DeleteHealthRecordCommand { Id = id };
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
     }
