@@ -11,12 +11,7 @@ namespace Application.Exceptions
             : base("One or more validation failures have occurred.", HttpStatusCode.BadRequest)
         {
         }
-
-        //public ValidationException(IDictionary<string, string[]> errorsDictionary)
-        //    : base(JsonSerializer.Serialize(errorsDictionary), HttpStatusCode.BadRequest)
-        //{
-        //}
-
+        
         public ValidationException(string message) : base(message, HttpStatusCode.BadRequest)
         {
         }
